@@ -124,6 +124,58 @@ def derive_key(secret, salt, info):
     )
     return hkdf.derive(secret)
 
+# -------------------- SIMULATION FUNCTION --------------------
+def run_bb84_once(num_bits=32, eve_enabled=True):
+    random_bits = quantum_random_number_generator(num_bits)
+    alice_bases = quantum_random_number_generator(num_bits)
+    bob_bases = quantum_random_number_generator(num_bits)
+
+    qc = encode_qubits(num_bits, random_bits, alice_bases)
+
+    if eve_enabled:
+        eve_bases = quantum_random_number_generator(num_bits)
+        qc = eavesdrop_qubits(qc, eve_bases)
+
+    qc, bob_results = measure_qubits(qc, bob_bases)
+
+    correct_bases = get_correct_bases(alice_bases, bob_bases)
+
+    alice_key = sift(correct_bases, random_bits)
+    bob_key = sift(correct_bases, bob_results)
+
+    # ---- QBER ----
+    QBER_THRESHOLD = 0.11
+
+    valid_indices = [i for i in range(len(correct_bases)) if correct_bases[i]]
+    if len(valid_indices) == 0:
+        return {"qber": 0, "detected": False, "keys_match": False}
+
+    sample_size = max(1, len(valid_indices) // 4)
+    sample = random.sample(valid_indices, min(sample_size, len(valid_indices)))
+
+    errors = sum(1 for i in sample if random_bits[i] != bob_results[i])
+    tested = len(sample)
+
+    qber = errors / tested if tested > 0 else 0
+    detected = qber > QBER_THRESHOLD
+
+    # ---- key match ----
+    if len(alice_key) == 0 or len(bob_key) == 0:
+        return {"qber": qber, "detected": detected, "keys_match": False}
+
+    salt = os.urandom(16)
+    info = b"shared_secret_key"
+
+    alice_derived = derive_key(bytes(int(b) for b in alice_key), salt, info)
+    bob_derived = derive_key(bytes(int(b) for b in bob_key), salt, info)
+
+    keys_match = alice_derived == bob_derived
+
+    return {
+        "qber": qber,
+        "detected": detected,
+        "keys_match": keys_match
+    }
 
 # -------------------- MAIN --------------------
 # Main pipeline executing BB84 quantum key distribution simulation,
@@ -166,8 +218,7 @@ def main():
 
     correct_bases = get_correct_bases(alice_bases, bob_bases)
     
-    print("Matching basis ratio:",
-      sum(correct_bases) / len(correct_bases))
+    print("Matching basis ratio:", sum(correct_bases) / len(correct_bases))
 
     alice_key = sift(correct_bases, random_bits)
     bob_key = sift(correct_bases, bob_results)
@@ -175,6 +226,8 @@ def main():
     # ---- detection test (QBER sample) ----
     # Quantum Bit Error Rate (QBER) estimation used to detect channel disturbance.
     # A non-zero QBER may indicate presence of an eavesdropper.
+    QBER_THRESHOLD = 0.11
+
     sample_size = max(1, len(correct_bases) // 4)
     sample = random.sample(range(len(correct_bases)), sample_size)
 
@@ -188,7 +241,7 @@ def main():
                 errors += 1
 
     qber = errors / tested if tested > 0 else 0
-    detected = qber > 0
+    detected = qber > QBER_THRESHOLD
 
     # ---- CASE 2: Eve detected ----
     if eve_enabled and detected:

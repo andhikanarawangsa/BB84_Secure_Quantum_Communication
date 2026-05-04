@@ -1,20 +1,31 @@
 # Quantum Key Distribution (BB84) Simulation with Qiskit and AES-GCM
+
 ## Overview
 This project implements a simulation of the **BB84 Quantum Key Distribution (QKD) protocol** using Qiskit, combined with classical post-quantum symmetric encryption using **AES-GCM**.
 The system demonstrates how quantum mechanics can be used to establish a secure shared key between two parties (Alice and Bob), and how an eavesdropper (Eve) affects the communication channel.
+This project bridges theoretical quantum cryptography concepts with practical simulation and analysis.
 
 ---
 
 ## Key Features
-- BB84 quantum key distribution simulation using Qiskit Aer
-- Random quantum basis selection (rectilinear and diagonal)
-- Optional intercept-resend eavesdropping attack simulation
+- BB84 quantum key distribution protocol simulation using Qiskit Aer
+- Quantum-based random bit and basis generation
+- Support for both rectilinear and diagonal encoding bases
+- Optional intercept-resend eavesdropping attack model
 - Quantum Bit Error Rate (QBER) estimation for eavesdropper detection
-- Key reconciliation (basis sifting)
-- Key derivation using HKDF-SHA256
-- Symmetric encryption using AES-GCM
-- Circuit visualization using Qiskit `QuantumCircuit.draw()`
-- Detailed bit-level comparison between Alice and Bob
+- Basis reconciliation (key sifting) for shared key extraction
+- Key derivation using HKDF-SHA256 (AES-256 compatible)
+- Symmetric encryption using AES-GCM for secure message exchange
+- Quantum circuit visualization using Qiskit `QuantumCircuit.draw()`
+- Bit-level comparison between Alice and Bob measurement outcomes
+- Statistical experiment mode for evaluating detection rate and QBER convergence
+
+---
+
+## Limitations
+- This implementation uses a simulated quantum environment (Qiskit Aer), not a physical quantum channel.
+- Noise models are not included, resulting in near-ideal channel conditions.
+- Eavesdropper detection is based on simplified QBER sampling, not full protocol security proofs.
 
 ---
 
@@ -58,6 +69,11 @@ pip install -r requirements.txt
 
 ---
 ## Usage
+The project supports two modes: a single-run demonstration and a multi-run statistical experiment.
+
+### 1. Single Run (Protocol Demonstration)
+Run a single BB84 simulation to observe the full protocol flow:
+
 Run without eavesdropper
 ```bash
 python qkd.py 20 --eavesdrop 0
@@ -66,9 +82,28 @@ Run with eavesdropper
 ```bash
 python qkd.py 20 --eavesdrop 1
 ```
-Where:
+This mode provides detailed output including:
+- Circuit visualization using Qiskit `QuantumCircuit.draw()`
+- Bit-by-bit comparison between Alice and Bob
+- Matching basis ratio
+- Derived keys (Alice vs Bob)
+- AES-GCM encryption and decryption results
+
+### 2. Multiple Runs (Statistical Experiment)
+Run repeated simulations to evaluate protocol performance:
+```bash
+python simulation.py 20 --runs 100 --eavesdrop 1
+```
+This mode provides statistical metrics:
+- Average Quantum Bit Error Rate (QBER)
+- Eavesdropper detection rate
+- Key mismatch rate
+- Detection rate convergence graph
+
+#### Parameters
 - 20 = number of qubits/bits
 - --eavesdrop: 0 (no Eve) / 1 (Eve Active)
+- --runs (experiment mode only): Number of repeated simulations
 
 ---
 ## Example Output
@@ -76,20 +111,22 @@ Where:
 (Quantum circuit diagram rendered by Qiskit)
 
 ### Bit Comparison Table
-Qubit   Alice (orig)   Bob (recv)     Match
---------------------------------------------------
-0       0              0              True
-1       1              0              False
+| Qubit | Alice (orig) | Bob (recv) | Match |
+|------:|--------------:|------------:|:------:|
+| 0     | 0             | 0           | True   |
+| 1     | 1             | 0           | False  |
 ...
 
 ### Key Result
 Alice key == Bob key: True
-Ciphertext: <hex output>
+
+Ciphertext: <hexadecimal output>
+
 Decrypted message: Secret Message
 
 ### Matching Basis Ratio
-The matching basis ratio typically fluctuates between: `0.45 – 0.65`
-This aligns with the theoretical probability of basis agreement in BB84: `P(match) = 0.5`
+The matching basis ratio typically fluctuates between: `0.45 – 0.65`.
+This aligns with the theoretical probability of basis agreement in BB84: `P(match) = 0.5`.
 Finite sample size introduces statistical variation.
 
 ## Security Analysis
@@ -98,4 +135,35 @@ Finite sample size introduces statistical variation.
 - Undetected eavesdropping is possible in limited sampling scenarios, highlighting the probabilistic nature of BB84 security.
 
 ## Requirements
-see `requirements.txt`
+See `requirements.txt` for the full list of dependencies.
+
+## Technologies Used
+- Qiskit (Quantum Simulation)
+- Qiskit Aer (Quantum backend simulator)
+- Cryptography (HKDF, AES-GCM)
+- Python 3.10+
+
+## Authors
+
+- Andhika Narawangsa Susilo
+- Muhammad Zaky Hermawan
+- Fairuz Apuilla Rahagi
+
+---
+
+## Academic Integrity Notice
+
+This project is published as part of an academic portfolio.
+Unauthorized reuse or plagiarism of this work is discouraged.
+
+*Note: This work was completed prior to publication and is shared
+retrospectively for academic portfolio purposes.*
+
+---
+
+## License
+
+This project is released for academic and research purposes only.
+
+*Originally developed: 2025 — Published: 2026*
+
