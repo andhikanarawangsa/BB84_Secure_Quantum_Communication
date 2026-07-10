@@ -6,6 +6,12 @@ The system demonstrates how quantum mechanics can be used to establish a secure 
 This project bridges theoretical quantum cryptography concepts with practical simulation and analysis.
 
 ---
+## Technical Report
+Full report: [QKD_BB84_Report(PDF)](report/QKD_BB84_Report.pdf)
+
+This report presents a BB84 QKD simulation using Qiskit Aer, including basis reconciliation, QBER-based eavesdropping detection, HKDF-SHA256 key derivation, and AES-GCM secure messaging.
+
+---
 
 ## Key Features
 - BB84 quantum key distribution protocol simulation using Qiskit Aer
