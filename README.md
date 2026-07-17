@@ -1,15 +1,16 @@
 # Quantum Key Distribution (BB84) Simulation with Qiskit and AES-GCM
 
-## Overview
+![Language](https://img.shields.io/badge/Language-Python-blue)
+![Qiskit](https://img.shields.io/badge/Qiskit-Quantum-purple)
+![Quantum](https://img.shields.io/badge/Quantum-BB84-blueviolet)
+![Cryptography](https://img.shields.io/badge/Cryptography-AES--256_GCM-green)
+![HKDF](https://img.shields.io/badge/KDF-HKDF--SHA256-orange)
+![Simulator](https://img.shields.io/badge/Backend-Qiskit_Aer-red)
+![License](https://img.shields.io/badge/License-MIT-yellow)
+
+📄 **Technical Report:** [QKD_BB84_Report.pdf](report/QKD_BB84_Report.pdf)
+
 This project implements a simulation of the **BB84 Quantum Key Distribution (QKD) protocol** using Qiskit, combined with classical post-quantum symmetric encryption using **AES-GCM**.
-The system demonstrates how quantum mechanics can be used to establish a secure shared key between two parties (Alice and Bob), and how an eavesdropper (Eve) affects the communication channel.
-This project bridges theoretical quantum cryptography concepts with practical simulation and analysis.
-
----
-## Technical Report
-Full report: [QKD_BB84_Report(PDF)](report/QKD_BB84_Report.pdf)
-
-This report presents a BB84 QKD simulation using Qiskit Aer, including basis reconciliation, QBER-based eavesdropping detection, HKDF-SHA256 key derivation, and AES-GCM secure messaging.
 
 ---
 
